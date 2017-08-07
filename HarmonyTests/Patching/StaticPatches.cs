@@ -20,28 +20,20 @@ namespace HarmonyTests
 			Assert.IsNotNull(originalMethod);
 
 			var patchClass = typeof(Class1Patch);
-			var realPrefix = patchClass.GetMethod("Prefix");
 			var realPostfix = patchClass.GetMethod("Postfix");
-			var realTranspiler = patchClass.GetMethod("Transpiler");
-			Assert.IsNotNull(realPrefix);
 			Assert.IsNotNull(realPostfix);
-			Assert.IsNotNull(realTranspiler);
 
 			Class1Patch._reset();
 
-			MethodInfo prefixMethod;
 			MethodInfo postfixMethod;
-			MethodInfo transpilerMethod;
-			PatchTools.GetPatches(typeof(Class1Patch), originalMethod, out prefixMethod, out postfixMethod, out transpilerMethod);
+			PatchTools.GetPatches(typeof(Class1Patch), originalMethod, out postfixMethod);
 
-			Assert.AreSame(realPrefix, prefixMethod);
 			Assert.AreSame(realPostfix, postfixMethod);
-			Assert.AreSame(realTranspiler, transpilerMethod);
 
 			var instance = HarmonyInstance.Create("test");
 			Assert.IsNotNull(instance);
 
-			var patcher = new PatchProcessor(instance, originalMethod, new HarmonyMethod(prefixMethod), new HarmonyMethod(postfixMethod), new HarmonyMethod(transpilerMethod));
+			var patcher = new PatchProcessor(instance, originalMethod, new HarmonyMethod(postfixMethod));
 			Assert.IsNotNull(patcher);
 
 			var originalMethodStartPre = Memory.GetMethodStart(originalMethod);
@@ -58,7 +50,6 @@ namespace HarmonyTests
 			}
 
 			Class1.Method1();
-			Assert.IsTrue(Class1Patch.prefixed);
 			Assert.IsTrue(Class1Patch.originalExecuted);
 			Assert.IsTrue(Class1Patch.postfixed);
 		}
@@ -72,28 +63,20 @@ namespace HarmonyTests
 			Assert.IsNotNull(originalMethod);
 
 			var patchClass = typeof(Class2Patch);
-			var realPrefix = patchClass.GetMethod("Prefix");
 			var realPostfix = patchClass.GetMethod("Postfix");
-			var realTranspiler = patchClass.GetMethod("Transpiler");
-			Assert.IsNotNull(realPrefix);
 			Assert.IsNotNull(realPostfix);
-			Assert.IsNotNull(realTranspiler);
 
 			Class2Patch._reset();
 
-			MethodInfo prefixMethod;
 			MethodInfo postfixMethod;
-			MethodInfo transpilerMethod;
-			PatchTools.GetPatches(typeof(Class2Patch), originalMethod, out prefixMethod, out postfixMethod, out transpilerMethod);
+			PatchTools.GetPatches(typeof(Class2Patch), originalMethod, out postfixMethod);
 
-			Assert.AreSame(realPrefix, prefixMethod);
 			Assert.AreSame(realPostfix, postfixMethod);
-			Assert.AreSame(realTranspiler, transpilerMethod);
 
 			var instance = HarmonyInstance.Create("test");
 			Assert.IsNotNull(instance);
 
-			var patcher = new PatchProcessor(instance, originalMethod, new HarmonyMethod(prefixMethod), new HarmonyMethod(postfixMethod), new HarmonyMethod(transpilerMethod));
+			var patcher = new PatchProcessor(instance, originalMethod, new HarmonyMethod(postfixMethod));
 			Assert.IsNotNull(patcher);
 
 			var originalMethodStartPre = Memory.GetMethodStart(originalMethod);
@@ -121,13 +104,11 @@ namespace HarmonyTests
 			var originalMethod = typeof(RestoreableClass).GetMethod("Method2");
 			Assert.IsNotNull(originalMethod);
 
-			MethodInfo prefixMethod;
 			MethodInfo postfixMethod;
-			MethodInfo transpilerMethod;
-			PatchTools.GetPatches(typeof(Class2Patch), originalMethod, out prefixMethod, out postfixMethod, out transpilerMethod);
+			PatchTools.GetPatches(typeof(Class2Patch), originalMethod, out postfixMethod);
 
 			var instance = HarmonyInstance.Create("test");
-			var patcher = new PatchProcessor(instance, originalMethod, new HarmonyMethod(prefixMethod), new HarmonyMethod(postfixMethod), null);
+			var patcher = new PatchProcessor(instance, originalMethod, new HarmonyMethod(postfixMethod));
 
 			// Check if the class is clean before using it for patching
 			Assert.AreEqual(null, instance.IsPatched(originalMethod), "Class already patched!");
@@ -164,13 +145,10 @@ namespace HarmonyTests
 			Class2Patch._reset();
 			new RestoreableClass().Method2();
 
-			Assert.IsFalse(Class2Patch.prefixed);
 			Assert.IsTrue(Class2Patch.originalExecuted);
 			Assert.IsFalse(Class2Patch.postfixed);
 
 			Assert.AreEqual(0, instance.IsPatched(originalMethod).Postfixes.Count);
-			Assert.AreEqual(0, instance.IsPatched(originalMethod).Prefixes.Count);
-			Assert.AreEqual(0, instance.IsPatched(originalMethod).Transpilers.Count);
 		}
 	}
 }

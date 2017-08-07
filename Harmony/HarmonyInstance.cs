@@ -9,31 +9,23 @@ namespace Harmony
 {
 	public class Patches
 	{
-		public readonly ReadOnlyCollection<Patch> Prefixes;
 		public readonly ReadOnlyCollection<Patch> Postfixes;
-		public readonly ReadOnlyCollection<Patch> Transpilers;
 
 		public ReadOnlyCollection<string> Owners
 		{
 			get
 			{
 				var result = new HashSet<string>();
-				result.UnionWith(Prefixes.Select(p => p.owner));
-				result.UnionWith(Postfixes.Select(p => p.owner));
 				result.UnionWith(Postfixes.Select(p => p.owner));
 				return result.ToList().AsReadOnly();
 			}
 		}
 
-		public Patches(Patch[] prefixes, Patch[] postfixes, Patch[] transpilers)
+		public Patches(Patch[] postfixes)
 		{
-			if (prefixes == null) prefixes = new Patch[0];
 			if (postfixes == null) postfixes = new Patch[0];
-			if (transpilers == null) transpilers = new Patch[0];
 
-			Prefixes = prefixes.ToList().AsReadOnly();
 			Postfixes = postfixes.ToList().AsReadOnly();
-			Transpilers = transpilers.ToList().AsReadOnly();
 		}
 	}
 
@@ -70,16 +62,16 @@ namespace Harmony
 			});
 		}
 
-		public PatchProcessor Patch(MethodBase original, HarmonyMethod prefix, HarmonyMethod postfix, HarmonyMethod transpiler = null)
+		public PatchProcessor Patch(MethodBase original, HarmonyMethod postfix)
 		{
-			var processor = new PatchProcessor(this, original, prefix, postfix, transpiler);
+			var processor = new PatchProcessor(this, original, postfix);
 			processor.Patch();
 			return processor;
 		}
 
-		public void Restore(MethodBase original, HarmonyMethod prefix, HarmonyMethod postfix, HarmonyMethod transpiler = null)
+		public void Restore(MethodBase original, HarmonyMethod postfix)
 		{
-			var processor = new PatchProcessor(this, original, prefix, postfix, transpiler);
+			var processor = new PatchProcessor(this, original, postfix);
 			processor.Restore();
 		}
 
@@ -102,9 +94,7 @@ namespace Harmony
 			GetPatchedMethods().Do(method =>
 			{
 				var info = HarmonySharedState.GetPatchInfo(method);
-				info.prefixes.Do(fix => assemblies[fix.owner] = fix.patch.DeclaringType.Assembly);
 				info.postfixes.Do(fix => assemblies[fix.owner] = fix.patch.DeclaringType.Assembly);
-				info.transpilers.Do(fix => assemblies[fix.owner] = fix.patch.DeclaringType.Assembly);
 			});
 
 			var result = new Dictionary<string, Version>();
