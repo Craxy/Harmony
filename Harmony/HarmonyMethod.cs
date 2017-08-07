@@ -20,16 +20,10 @@ namespace Harmony
 		public HarmonyMethod()
 		{
 		}
-
+		
 		void ImportMethod(MethodInfo theMethod)
 		{
 			method = theMethod;
-			if (method != null)
-			{
-				var infos = method.GetHarmonyMethods();
-				if (infos != null)
-					Merge(infos).CopyTo(this);
-			}
 		}
 
 		public HarmonyMethod(MethodInfo method)
@@ -105,25 +99,6 @@ namespace Harmony
 				resultTrv.Field(f).SetValue(detailValue ?? baseValue);
 			});
 			return result;
-		}
-
-		public static List<HarmonyMethod> GetHarmonyMethods(this Type type)
-		{
-			return type.GetCustomAttributes(true)
-						.Where(attr => attr is HarmonyAttribute)
-						.Cast<HarmonyAttribute>()
-						.Select(attr => attr.info)
-						.ToList();
-		}
-
-		public static List<HarmonyMethod> GetHarmonyMethods(this MethodBase method)
-		{
-			if (method is DynamicMethod) return new List<HarmonyMethod>();
-			return method.GetCustomAttributes(true)
-						.Where(attr => attr is HarmonyAttribute)
-						.Cast<HarmonyAttribute>()
-						.Select(attr => attr.info)
-						.ToList();
 		}
 	}
 }

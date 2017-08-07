@@ -1,4 +1,5 @@
 ﻿using System;
+using HarmonyTests.SimpleTest;
 
 namespace HarmonyTests
 {
@@ -6,9 +7,8 @@ namespace HarmonyTests
   {
     public static void Main()
     {
-      var sp = new StaticPatches();
-      sp.TestMethod1();
-      sp.TestMethod2();
+      var test = new SimpleTests();
+      test.Test();
       
       Console.WriteLine("---------");
     }

@@ -56,7 +56,7 @@ namespace Harmony
 				Memory.WriteBytes(originalCodeStart, oldPatchHandle.OverwrittenCode);
 			}
 
-			if (patchInfo.postfixes.Length + patchInfo.prefixes.Length + patchInfo.transpilers.Length == 0)
+			if (patchInfo.postfixes.Length == 0)
 			{
 				// No patches, can just leave the original method intact
 				PatchTools.ForgetObject(originalCodeStart);

@@ -74,9 +74,10 @@ namespace Harmony
 
 		bool CallPrepare()
 		{
-			if (original != null)
-				return RunMethod<HarmonyPrepare, bool>(true, original);
-			return RunMethod<HarmonyPrepare, bool>(true);
+//			if (original != null)
+//				return RunMethod<HarmonyPrepare, bool>(true, original);
+//			return RunMethod<HarmonyPrepare, bool>(true);
+			return false;
 		}
 
 		void ProcessType()
@@ -86,12 +87,10 @@ namespace Harmony
 			var patchable = CallPrepare();
 			if (patchable)
 			{
-				if (original == null)
-					original = RunMethod<HarmonyTargetMethod, MethodBase>(null);
+//				if (original == null)
+//					original = RunMethod<HarmonyTargetMethod, MethodBase>(null);
 				if (original == null)
 					throw new ArgumentException("No target method specified for class " + container.FullName);
-
-				PatchTools.GetPatches(container, original, out postfix.method);
 
 
 				if (postfix.method != null)
@@ -99,8 +98,7 @@ namespace Harmony
 					if (postfix.method.IsStatic == false)
 						throw new ArgumentException("Patch method " + postfix.method.Name + " in " + postfix.method.DeclaringType + " must be static");
 
-					var postfixAttributes = postfix.method.GetHarmonyMethods();
-					containerAttributes.Merge(HarmonyMethod.Merge(postfixAttributes)).CopyTo(postfix);
+					containerAttributes.CopyTo(postfix);
 				}
 
 			}

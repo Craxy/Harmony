@@ -46,22 +46,6 @@ namespace Harmony
 			return new HarmonyInstance(id);
 		}
 
-		//
-
-		public void PatchAll(Assembly assembly)
-		{
-			assembly.GetTypes().Do(type =>
-			{
-				var parentMethodInfos = type.GetHarmonyMethods();
-				if (parentMethodInfos != null && parentMethodInfos.Count() > 0)
-				{
-					var info = HarmonyMethod.Merge(parentMethodInfos);
-					var processor = new PatchProcessor(this, type, info);
-					processor.Patch();
-				}
-			});
-		}
-
 		public PatchProcessor Patch(MethodBase original, HarmonyMethod postfix)
 		{
 			var processor = new PatchProcessor(this, original, postfix);

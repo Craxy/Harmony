@@ -32,13 +32,5 @@ namespace Harmony
 				method = AccessTools.Method(patchType, name, parameters);
 			return method;
 		}
-
-		public static void GetPatches(Type patchType, MethodBase original, out MethodInfo postfix)
-		{
-			var type = original.DeclaringType;
-			var methodName = original.Name;
-
-			postfix = GetPatchMethod<HarmonyPostfix>(patchType, "Postfix");
-		}
 	}
 }
