@@ -1,27 +1,26 @@
 ﻿using Harmony;
 using HarmonyTests.Assets;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace HarmonyTests
 {
-	[TestClass]
 	public class TestTraverse_Properties
 	{
 		// Traverse.ToString() should return the value of a traversed property
 		//
-		[TestMethod]
+		[Fact]
 		public void Traverse_Property_ToString()
 		{
 			var instance = new TraverseProperties_AccessModifiers(TraverseProperties.testStrings);
 
 			var trv = Traverse.Create(instance).Property(TraverseProperties.propertyNames[0]);
-			Assert.AreEqual(TraverseProperties.testStrings[0], trv.ToString());
+			Assert.Equal(TraverseProperties.testStrings[0], trv.ToString());
 		}
 
 		// Traverse.GetValue() should return the value of a traversed property
 		// regardless of its access modifier
 		//
-		[TestMethod]
+		[Fact]
 		public void Traverse_Property_GetValue()
 		{
 			var instance = new TraverseProperties_AccessModifiers(TraverseProperties.testStrings);
@@ -31,17 +30,17 @@ namespace HarmonyTests
 			{
 				var name = TraverseProperties.propertyNames[i];
 				var ptrv = trv.Property(name);
-				Assert.IsNotNull(ptrv);
+				Assert.NotNull(ptrv);
 
-				Assert.AreEqual(TraverseProperties.testStrings[i], ptrv.GetValue());
-				Assert.AreEqual(TraverseProperties.testStrings[i], ptrv.GetValue<string>());
+				Assert.Equal(TraverseProperties.testStrings[i], ptrv.GetValue());
+				Assert.Equal(TraverseProperties.testStrings[i], ptrv.GetValue<string>());
 			}
 		}
 
 		// Traverse.SetValue() should set the value of a traversed property
 		// regardless of its access modifier
 		//
-		[TestMethod]
+		[Fact]
 		public void Traverse_Property_SetValue()
 		{
 			var instance = new TraverseProperties_AccessModifiers(TraverseProperties.testStrings);
@@ -52,16 +51,16 @@ namespace HarmonyTests
 				var newValue = "newvalue" + i;
 
 				// before
-				Assert.AreEqual(TraverseProperties.testStrings[i], instance.GetTestProperty(i));
+				Assert.Equal(TraverseProperties.testStrings[i], instance.GetTestProperty(i));
 
 				var name = TraverseProperties.propertyNames[i];
 				var ptrv = trv.Property(name);
 				ptrv.SetValue(newValue);
 
 				// after
-				Assert.AreEqual(newValue, instance.GetTestProperty(i));
-				Assert.AreEqual(newValue, ptrv.GetValue());
-				Assert.AreEqual(newValue, ptrv.GetValue<string>());
+				Assert.Equal(newValue, instance.GetTestProperty(i));
+				Assert.Equal(newValue, ptrv.GetValue());
+				Assert.Equal(newValue, ptrv.GetValue<string>());
 			}
 		}
 	}

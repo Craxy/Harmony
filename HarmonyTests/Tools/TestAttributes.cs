@@ -1,26 +1,24 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Harmony;
+﻿using Harmony;
 using HarmonyTests.Assets;
-using System.Linq;
+using Xunit;
 
 namespace HarmonyTests.Tools
 {
-	[TestClass]
 	public class Test_Attributes
 	{
-		[TestMethod]
+		[Fact]
 		public void TestAttributes()
 		{
 			var type = typeof(AllAttributesClass);
 			var infos = type.GetHarmonyMethods();
 			var info = HarmonyMethod.Merge(infos);
-			Assert.IsNotNull(info);
-			Assert.AreEqual(typeof(string), info.originalType);
-			Assert.AreEqual("foobar", info.methodName);
-			Assert.IsNotNull(info.parameter);
-			Assert.AreEqual(2, info.parameter.Length);
-			Assert.AreEqual(typeof(float), info.parameter[0]);
-			Assert.AreEqual(typeof(string), info.parameter[1]);
+			Assert.NotNull(info);
+			Assert.Equal(typeof(string), info.originalType);
+			Assert.Equal("foobar", info.methodName);
+			Assert.NotNull(info.parameter);
+			Assert.Equal(2, info.parameter.Length);
+			Assert.Equal(typeof(float), info.parameter[0]);
+			Assert.Equal(typeof(string), info.parameter[1]);
 		}
 	}
 }

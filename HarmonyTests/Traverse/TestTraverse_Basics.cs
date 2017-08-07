@@ -1,30 +1,29 @@
 ﻿using Harmony;
 using HarmonyTests.Assets;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using Xunit;
 
 namespace HarmonyTests
 {
-	[TestClass]
 	public class TestTraverse_Basics
 	{
 		// Basic integrity check for our test class and the field-testvalue relations
 		//
-		[TestMethod]
+		[Fact]
 		public void Instantiate_TraverseFields_AccessModifiers()
 		{
 			var instance = new TraverseFields_AccessModifiers(TraverseFields.testStrings);
 
 			for (int i = 0; i < TraverseFields.testStrings.Length; i++)
-				Assert.AreEqual(TraverseFields.testStrings[i], instance.GetTestField(i));
+				Assert.Equal(TraverseFields.testStrings[i], instance.GetTestField(i));
 		}
 
 		public static void AssertIsEmpty(Traverse trv)
 		{
-			Assert.AreEqual(null, AccessTools.Field(typeof(Traverse), "_root").GetValue(trv));
-			Assert.AreEqual(null, AccessTools.Field(typeof(Traverse), "_type").GetValue(trv));
-			Assert.AreEqual(null, AccessTools.Field(typeof(Traverse), "_info").GetValue(trv));
-			Assert.AreEqual(null, AccessTools.Field(typeof(Traverse), "_index").GetValue(trv));
+			Assert.Equal(null, AccessTools.Field(typeof(Traverse), "_root").GetValue(trv));
+			Assert.Equal(null, AccessTools.Field(typeof(Traverse), "_type").GetValue(trv));
+			Assert.Equal(null, AccessTools.Field(typeof(Traverse), "_info").GetValue(trv));
+			Assert.Equal(null, AccessTools.Field(typeof(Traverse), "_index").GetValue(trv));
 		}
 
 		class FooBar
@@ -36,7 +35,7 @@ namespace HarmonyTests
 
 		// Traverse should default to an empty instance to avoid errors
 		//
-		[TestMethod]
+		[Fact]
 		public void Traverse_SilentFailures()
 		{
 			var trv1 = new Traverse(null);
@@ -58,66 +57,66 @@ namespace HarmonyTests
 
 		// Traverse should handle basic null values
 		//
-		[TestMethod]
+		[Fact]
 		public void Traverse_Create_With_Null()
 		{
 			var trv = Traverse.Create(null);
 
-			Assert.IsNotNull(trv);
-			Assert.IsNull(trv.ToString());
+			Assert.NotNull(trv);
+			Assert.Null(trv.ToString());
 
 			// field access
 
 			var ftrv = trv.Field("foo");
-			Assert.IsNotNull(ftrv);
+			Assert.NotNull(ftrv);
 
-			Assert.IsNull(ftrv.GetValue());
-			Assert.IsNull(ftrv.ToString());
-			Assert.AreEqual(0, ftrv.GetValue<int>());
-			Assert.AreSame(ftrv, ftrv.SetValue(123));
+			Assert.Null(ftrv.GetValue());
+			Assert.Null(ftrv.ToString());
+			Assert.Equal(0, ftrv.GetValue<int>());
+			Assert.Same(ftrv, ftrv.SetValue(123));
 
 			// property access
 
 			var ptrv = trv.Property("foo");
-			Assert.IsNotNull(ptrv);
+			Assert.NotNull(ptrv);
 
-			Assert.IsNull(ptrv.GetValue());
-			Assert.IsNull(ptrv.ToString());
-			Assert.IsNull(ptrv.GetValue<string>());
-			Assert.AreSame(ptrv, ptrv.SetValue("test"));
+			Assert.Null(ptrv.GetValue());
+			Assert.Null(ptrv.ToString());
+			Assert.Null(ptrv.GetValue<string>());
+			Assert.Same(ptrv, ptrv.SetValue("test"));
 
 			// method access
 
 			var mtrv = trv.Method("zee");
-			Assert.IsNotNull(mtrv);
+			Assert.NotNull(mtrv);
 
-			Assert.IsNull(mtrv.GetValue());
-			Assert.IsNull(mtrv.ToString());
-			Assert.AreEqual(0, mtrv.GetValue<float>());
-			Assert.AreSame(mtrv, mtrv.SetValue(null));
+			Assert.Null(mtrv.GetValue());
+			Assert.Null(mtrv.ToString());
+			Assert.Equal(0, mtrv.GetValue<float>());
+			Assert.Same(mtrv, mtrv.SetValue(null));
 		}
 
 		// Traverse.ToString() should return a meaningful string representation of its initial value
 		//
-		[TestMethod]
+		[Fact]
 		public void Traverse_Create_Instance_ToString()
 		{
 			var instance = new TraverseFields_AccessModifiers(TraverseFields.testStrings);
 
 			var trv = Traverse.Create(instance);
-			Assert.AreEqual(instance.ToString(), trv.ToString());
+			Assert.Equal(instance.ToString(), trv.ToString());
 		}
 
 		// Traverse.ToString() should return a meaningful string representation of its initial type
 		//
-		[TestMethod]
+		[Fact]
 		public void Traverse_Create_Type_ToString()
 		{
 			var instance = new TraverseFields_AccessModifiers(TraverseFields.testStrings);
 
 			var type = typeof(TraverseFields_AccessModifiers);
 			var trv = Traverse.Create(type);
-			Assert.AreEqual(type.ToString(), trv.ToString());
+			Assert.Equal(type.ToString(), trv.ToString());
 		}
 	}
 }
