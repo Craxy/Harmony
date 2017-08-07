@@ -69,15 +69,11 @@ namespace Harmony
 	[Serializable]
 	public class PatchInfo
 	{
-		public Patch[] prefixes;
 		public Patch[] postfixes;
-		public Patch[] transpilers;
 
 		public PatchInfo()
 		{
-			prefixes = new Patch[0];
 			postfixes = new Patch[0];
-			transpilers = new Patch[0];
 		}
 
 		public void AddPostfix(MethodInfo patch, string owner, string[] before, string[] after)
