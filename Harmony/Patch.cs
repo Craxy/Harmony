@@ -49,8 +49,8 @@ namespace Harmony
 			return (PatchInfo)formatter.Deserialize(streamMemory);
 		}
 
-		// general sorting by (in that order): before, after, priority and index
-		public static int PriorityComparer(object obj, int index, int priority, string[] before, string[] after)
+		// general sorting by (in that order): before, after, and index
+		public static int Comparer(object obj, int index, string[] before, string[] after)
 		{
 			var trv = Traverse.Create(obj);
 			var theirOwner = trv.Field("owner").GetValue<string>();
@@ -61,9 +61,6 @@ namespace Harmony
 				return -1;
 			if (after != null && Array.IndexOf(after, theirOwner) > -1)
 				return 1;
-
-			if (priority != theirPriority)
-				return -(priority.CompareTo(theirPriority));
 
 			return index.CompareTo(theirIndex);
 		}
@@ -83,15 +80,15 @@ namespace Harmony
 			transpilers = new Patch[0];
 		}
 
-		public void AddPostfix(MethodInfo patch, string owner, int priority, string[] before, string[] after)
+		public void AddPostfix(MethodInfo patch, string owner, string[] before, string[] after)
 		{
-			AddPatch(patch, ref postfixes, owner, priority, before, after);
+			AddPatch(patch, ref postfixes, owner, before, after);
 		}
 
-		private void AddPatch(MethodInfo patch, ref Patch[] patchlist, string owner, int priority, string[] before, string[] after)
+		private void AddPatch(MethodInfo patch, ref Patch[] patchlist, string owner, string[] before, string[] after)
 		{
 			var l = patchlist.ToList();
-			l.Add(new Patch(patch, (patchlist.LastOrDefault()?.index ?? 0) + 1, owner, priority, before, after));
+			l.Add(new Patch(patch, (patchlist.LastOrDefault()?.index ?? 0) + 1, owner, before, after));
 			patchlist = l.ToArray();
 		}
 
@@ -111,21 +108,19 @@ namespace Harmony
 	[Serializable]
 	public class Patch : IComparable
 	{
-		readonly public int index;
-		readonly public string owner;
-		readonly public int priority;
-		readonly public string[] before;
-		readonly public string[] after;
+		public readonly int index;
+		public readonly string owner;
+		public readonly string[] before;
+		public readonly string[] after;
 
-		readonly public MethodInfo patch;
+		public readonly MethodInfo patch;
 
-		public Patch(MethodInfo patch, int index, string owner, int priority, string[] before, string[] after)
+		public Patch(MethodInfo patch, int index, string owner, string[] before, string[] after)
 		{
 			if (patch is DynamicMethod) throw new Exception("Cannot directly reference dynamic method \"" + patch + "\" in Harmony. Use a factory method instead that will return the dynamic method.");
 
 			this.index = index;
 			this.owner = owner;
-			this.priority = priority;
 			this.before = before;
 			this.after = after;
 			this.patch = patch;
@@ -150,7 +145,7 @@ namespace Harmony
 
 		public int CompareTo(object obj)
 		{
-			return PatchInfoSerialization.PriorityComparer(obj, index, priority, before, after);
+			return PatchInfoSerialization.Comparer(obj, index, before, after);
 		}
 
 		public override int GetHashCode()

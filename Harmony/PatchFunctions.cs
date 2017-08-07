@@ -14,11 +14,10 @@ namespace Harmony
 		{
 			if (info == null || info.method == null) return;
 
-			var priority = info.prioritiy == -1 ? Priority.Normal : info.prioritiy;
 			var before = info.before ?? new string[0];
 			var after = info.after ?? new string[0];
 
-			patchInfo.AddPostfix(info.method, owner, priority, before, after);
+			patchInfo.AddPostfix(info.method, owner, before, after);
 		}
 
 		public static void RemovePostfix(PatchInfo patchInfo, HarmonyMethod info)

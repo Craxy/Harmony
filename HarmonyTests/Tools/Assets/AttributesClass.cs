@@ -22,7 +22,6 @@ namespace HarmonyTests.Assets
 		public void Method2() { }
 
 		[HarmonyPrefix]
-		[HarmonyPriority(Priority.High)]
 		public void Method3() { }
 
 		[HarmonyPostfix]
