@@ -83,19 +83,9 @@ namespace Harmony
 			transpilers = new Patch[0];
 		}
 
-		public void AddPrefix(MethodInfo patch, string owner, int priority, string[] before, string[] after)
-		{
-			AddPatch(patch, ref prefixes, owner, priority, before, after);
-		}
-
 		public void AddPostfix(MethodInfo patch, string owner, int priority, string[] before, string[] after)
 		{
 			AddPatch(patch, ref postfixes, owner, priority, before, after);
-		}
-
-		public void AddTranspiler(MethodInfo patch, string owner, int priority, string[] before, string[] after)
-		{
-			AddPatch(patch, ref transpilers, owner, priority, before, after);
 		}
 
 		private void AddPatch(MethodInfo patch, ref Patch[] patchlist, string owner, int priority, string[] before, string[] after)
@@ -105,19 +95,9 @@ namespace Harmony
 			patchlist = l.ToArray();
 		}
 
-		public void RemovePrefix(MethodInfo patch)
-		{
-			RemovePatch(patch, ref prefixes);
-		}
-
 		public void RemovePostfix(MethodInfo patch)
 		{
 			RemovePatch(patch, ref postfixes);
-		}
-
-		public void RemoveTranspiler(MethodInfo patch)
-		{
-			RemovePatch(patch, ref transpilers);
 		}
 
 		private void RemovePatch(MethodInfo patch, ref Patch[] patchlist)

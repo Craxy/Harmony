@@ -15,11 +15,11 @@ namespace Harmony
 		public static string RESULT_VAR = "__result";
 		public static string STATE_VAR = "__state";
 
-		public static DynamicMethod CreatePatchedMethod(MethodBase original, List<MethodInfo> prefixes, List<MethodInfo> postfixes, List<MethodInfo> transpilers)
+		public static DynamicMethod CreatePatchedMethod(MethodBase original, List<MethodInfo> postfixes)
 		{
 			if (HarmonyInstance.DEBUG) FileLog.Log("PATCHING " + original.DeclaringType + " " + original);
 
-			var idx = prefixes.Count() + postfixes.Count();
+			var idx = postfixes.Count();
 			var patch = DynamicTools.CreateDynamicMethod(original, "_Patch" + idx);
 			var il = patch.GetILGenerator();
 
@@ -33,30 +33,13 @@ namespace Harmony
 				privateVars[RESULT_VAR] = resultVariable;
 			}
 
-			prefixes.ForEach(prefix =>
-			{
-				prefix.GetParameters()
-					.Where(patchParam => patchParam.Name == STATE_VAR)
-					.Do(patchParam =>
-					{
-						var privateStateVariable = DynamicTools.DeclareLocalVariable(il, patchParam.ParameterType);
-						privateVars[prefix.DeclaringType.FullName] = privateStateVariable;
-					});
-			});
-
 			var afterOriginal1 = il.DefineLabel();
-			var afterOriginal2 = il.DefineLabel();
-			var canHaveJump = AddPrefixes(il, original, prefixes, privateVars, afterOriginal2);
 
 			var copier = new MethodCopier(original, patch, originalVariables);
-			foreach (var transpiler in transpilers)
-				copier.AddTranspiler(transpiler);
 			copier.Emit(afterOriginal1);
 			Emitter.MarkLabel(il, afterOriginal1);
 			if (resultVariable != null)
 				Emitter.Emit(il, OpCodes.Stloc, resultVariable);
-			if (canHaveJump)
-				Emitter.MarkLabel(il, afterOriginal2);
 
 			AddPostfixes(il, original, postfixes, privateVars);
 
@@ -159,24 +142,6 @@ namespace Harmony
 				Emitter.Emit(il, OpCodes.Ldarg, patchArgIndex);
 				Emitter.Emit(il, LoadIndOpCodeFor(originalParameters[idx].ParameterType));
 			}
-		}
-
-		static bool AddPrefixes(ILGenerator il, MethodBase original, List<MethodInfo> prefixes, Dictionary<string, LocalBuilder> variables, Label label)
-		{
-			var canHaveJump = false;
-			prefixes.ForEach(fix =>
-			{
-				EmitCallParameter(il, original, fix, variables);
-				Emitter.Emit(il, OpCodes.Call, fix);
-				if (fix.ReturnType != typeof(void))
-				{
-					if (fix.ReturnType != typeof(bool))
-						throw new Exception("Prefix patch " + fix + " has not \"bool\" or \"void\" return type: " + fix.ReturnType);
-					Emitter.Emit(il, OpCodes.Brfalse, label);
-					canHaveJump = true;
-				}
-			});
-			return canHaveJump;
 		}
 
 		static void AddPostfixes(ILGenerator il, MethodBase original, List<MethodInfo> postfixes, Dictionary<string, LocalBuilder> variables)

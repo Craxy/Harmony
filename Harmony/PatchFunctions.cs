@@ -10,17 +10,6 @@ namespace Harmony
 {
 	public static class PatchFunctions
 	{
-		public static void AddPrefix(PatchInfo patchInfo, string owner, HarmonyMethod info)
-		{
-			if (info == null || info.method == null) return;
-
-			var priority = info.prioritiy == -1 ? Priority.Normal : info.prioritiy;
-			var before = info.before ?? new string[0];
-			var after = info.after ?? new string[0];
-
-			patchInfo.AddPrefix(info.method, owner, priority, before, after);
-		}
-
 		public static void AddPostfix(PatchInfo patchInfo, string owner, HarmonyMethod info)
 		{
 			if (info == null || info.method == null) return;
@@ -32,36 +21,11 @@ namespace Harmony
 			patchInfo.AddPostfix(info.method, owner, priority, before, after);
 		}
 
-		public static void AddTranspiler(PatchInfo patchInfo, string owner, HarmonyMethod info)
-		{
-			if (info == null || info.method == null) return;
-
-			var priority = info.prioritiy == -1 ? Priority.Normal : info.prioritiy;
-			var before = info.before ?? new string[0];
-			var after = info.after ?? new string[0];
-
-			patchInfo.AddTranspiler(info.method, owner, priority, before, after);
-		}
-
-		public static void RemovePrefix(PatchInfo patchInfo, HarmonyMethod info)
-		{
-			if (info == null || info.method == null) return;
-
-			patchInfo.RemovePrefix(info.method);
-		}
-
 		public static void RemovePostfix(PatchInfo patchInfo, HarmonyMethod info)
 		{
 			if (info == null || info.method == null) return;
 
 			patchInfo.RemovePostfix(info.method);
-		}
-
-		public static void RemoveTranspiler(PatchInfo patchInfo, HarmonyMethod info)
-		{
-			if (info == null || info.method == null) return;
-
-			patchInfo.RemoveTranspiler(info.method);
 		}
 
 		public static List<MethodInfo> GetSortedPatchMethods(MethodBase original, Patch[] patches)
@@ -81,9 +45,7 @@ namespace Harmony
 
 		public static void UpdateWrapper(MethodBase original, PatchInfo patchInfo)
 		{
-			var sortedPrefixes = GetSortedPatchMethods(original, patchInfo.prefixes);
 			var sortedPostfixes = GetSortedPatchMethods(original, patchInfo.postfixes);
-			var sortedTranspilers = GetSortedPatchMethods(original, patchInfo.transpilers);
 
 			var originalCodeStart = Memory.GetMethodStart(original);
 
@@ -102,7 +64,7 @@ namespace Harmony
 				return;
 			}
 
-			var replacement = MethodPatcher.CreatePatchedMethod(original, sortedPrefixes, sortedPostfixes, sortedTranspilers);
+			var replacement = MethodPatcher.CreatePatchedMethod(original, sortedPostfixes);
 			if (replacement == null) throw new MissingMethodException("Cannot create dynamic replacement for " + original);
 			var patchCodeStart = Memory.GetMethodStart(replacement);
 
