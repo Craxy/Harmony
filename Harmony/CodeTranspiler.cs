@@ -11,18 +11,12 @@ namespace Harmony
 	public class CodeTranspiler
 	{
 		private IEnumerable<CodeInstruction> codeInstructions;
-		private List<MethodInfo> transpilers = new List<MethodInfo>();
 
 		public CodeTranspiler(List<ILInstruction> ilInstructions)
 		{
 			codeInstructions = ilInstructions
 				.Select(ilInstruction => ilInstruction.GetCodeInstruction())
 				.ToList().AsEnumerable();
-		}
-
-		public void Add(MethodInfo transpiler)
-		{
-			transpilers.Add(transpiler);
 		}
 
 		public static IEnumerable ConvertInstructions(Type type, IEnumerable enumerable)
@@ -43,32 +37,9 @@ namespace Harmony
 			return list as IEnumerable;
 		}
 
-		public static IEnumerable ConvertInstructions(MethodInfo transpiler, IEnumerable enumerable)
-		{
-			var type = transpiler.GetParameters()
-				  .Select(p => p.ParameterType)
-				  .FirstOrDefault(t => t.IsGenericType && t.GetGenericTypeDefinition().Name.StartsWith("IEnumerable"));
-			return ConvertInstructions(type, enumerable);
-		}
-
 		public IEnumerable<CodeInstruction> GetResult(ILGenerator generator, MethodBase method)
 		{
 			IEnumerable instructions = codeInstructions;
-			transpilers.ForEach(transpiler =>
-			{
-				instructions = ConvertInstructions(transpiler, instructions);
-				var parameter = new List<object>();
-				transpiler.GetParameters().Select(param => param.ParameterType).Do(type =>
-				{
-					if (type.IsAssignableFrom(typeof(ILGenerator)))
-						parameter.Add(generator);
-					else if (type.IsAssignableFrom(typeof(MethodBase)))
-						parameter.Add(method);
-					else
-						parameter.Add(instructions);
-				});
-				instructions = transpiler.Invoke(null, parameter.ToArray()) as IEnumerable;
-			});
 			instructions = ConvertInstructions(typeof(IEnumerable<CodeInstruction>), instructions);
 			return instructions as IEnumerable<CodeInstruction>;
 		}

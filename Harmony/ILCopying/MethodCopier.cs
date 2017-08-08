@@ -10,7 +10,6 @@ namespace Harmony.ILCopying
 	public class MethodCopier
 	{
 		readonly MethodBodyReader reader;
-		readonly List<MethodInfo> transpilers = new List<MethodInfo>();
 
 		public MethodCopier(MethodBase fromMethod, DynamicMethod toDynamicMethod, LocalBuilder[] existingVariables = null)
 		{
@@ -21,14 +20,9 @@ namespace Harmony.ILCopying
 			reader.ReadInstructions();
 		}
 
-		public void AddTranspiler(MethodInfo transpiler)
-		{
-			transpilers.Add(transpiler);
-		}
-
 		public void Emit(Label endLabel)
 		{
-			reader.FinalizeILCodes(transpilers, endLabel);
+			reader.FinalizeILCodes(endLabel);
 		}
 	}
 
@@ -145,7 +139,7 @@ namespace Harmony.ILCopying
 
 		// use parsed IL codes and emit them to a generator
 
-		public void FinalizeILCodes(List<MethodInfo> transpilers, Label endLabel)
+		public void FinalizeILCodes(Label endLabel)
 		{
 			if (generator == null) return;
 
@@ -188,7 +182,6 @@ namespace Harmony.ILCopying
 
 			// pass2 - filter through all processors
 			var codeTranspiler = new CodeTranspiler(ilInstructions);
-			transpilers.ForEach(transpiler => codeTranspiler.Add(transpiler));
 			var codeInstructions = codeTranspiler.GetResult(generator, method)
 				.Select(instruction =>
 				{
