@@ -6,50 +6,71 @@ using System.Runtime.InteropServices;
 
 namespace Harmony
 {
-	public static class PatchFunctions
+	internal static class PatchFunctions
 	{
-		internal struct PatchHandle
+		internal class PatchHandle : IDisposable
 		{
-			public DynamicMethod PatchedMethod;
-			public byte[] OverwrittenCode;
+			public DynamicMethod PatchedMethod { get; private set; }
+			public byte[] OverwrittenCode { get; private set; }
+
+			public PatchHandle(DynamicMethod patchedMethod, byte[] overwrittenCode)
+			{
+				PatchedMethod = patchedMethod ?? throw new ArgumentNullException(nameof(patchedMethod));
+				OverwrittenCode = overwrittenCode ?? throw new ArgumentNullException(nameof(overwrittenCode));
+			}
+
+			public void Destroy() 
+				=> Dispose();
+			public void Dispose()
+			{
+				PatchedMethod = null;
+				OverwrittenCode = null;
+			}
+
+			public bool IsDisposed => PatchedMethod == null;
+
 		}
 
-		public static void UpdateWrapper(MethodBase original, MethodInfo postfix)
+		public static PatchHandle Update(MethodBase original, MethodInfo postfix)
 		{
-//			if (postfix == null)
-//			{
-//				// revert postfix
-//				return;
-//			}
+			if (postfix == null)
+			{
+				throw new ArgumentNullException(nameof(postfix));
+			}
 			
 			var originalCodeStart = Memory.GetMethodStart(original);
 
-			// If we're overwriting an old patch, restore the original 12 (or 6) bytes of the method beforehand
-			object oldHandle;
-			if (PatchTools.RecallObject(original, out oldHandle))
-			{
-				var oldPatchHandle = (PatchHandle)oldHandle;
-				Memory.WriteBytes(originalCodeStart, oldPatchHandle.OverwrittenCode);
-			}
-
-			if (postfix == null)
-			{
-				// No patches, can just leave the original method intact
-				PatchTools.ForgetObject(originalCodeStart);
-				return;
-			}
-
 			var replacement = MethodPatcher.CreatePatchedMethod(original, postfix);
-			if (replacement == null) throw new MissingMethodException("Cannot create dynamic replacement for " + original);
+			if (replacement == null)
+			{
+				throw new MissingMethodException($"Cannot create dynamic replacement for {original}");
+			}
 			var patchCodeStart = Memory.GetMethodStart(replacement);
-
+			
 			// This part effectively corrupts the original compiled method, so we should prepare to restore the overwritten part later
 			// (It doesn't look like it breaks something, but... better safe than sorry?)
-			var oldBytes = new byte[(IntPtr.Size == sizeof(long)) ? 12 : 6];
+			var oldBytes = new byte[IntPtr.Size == sizeof(long) ? 12 : 6];
 			Marshal.Copy((IntPtr)originalCodeStart, oldBytes, 0, oldBytes.Length);
-			// Store code being overwritten by the jump for the restoration
-			PatchTools.RememberObject(original, new PatchHandle { PatchedMethod = replacement, OverwrittenCode = oldBytes });
+
 			Memory.WriteJump(originalCodeStart, patchCodeStart);
+
+			return new PatchHandle(patchedMethod: replacement, overwrittenCode: oldBytes);
+		}
+		public static void Restore(MethodBase original, PatchHandle patchHandle)
+		{
+			if (patchHandle == null)
+			{
+				throw new ArgumentNullException(nameof(patchHandle));
+			}
+			if (patchHandle.IsDisposed)
+			{
+				throw new InvalidOperationException($"{nameof(patchHandle)} is disposed!");
+			}
+			
+			var originalCodeStart = Memory.GetMethodStart(original);
+			Memory.WriteBytes(originalCodeStart, patchHandle.OverwrittenCode);
+			
+			patchHandle.Dispose();
 		}
 	}
 }

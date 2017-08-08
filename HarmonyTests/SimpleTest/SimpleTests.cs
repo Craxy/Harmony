@@ -35,7 +35,8 @@ namespace HarmonyTests.SimpleTest
         obj.Reset();
       }
       
-      var patch = PatchProcessor.Patch(src, prefix);
+      var patch = Patch.Apply(src, prefix);
+      Assert.True(patch.IsPatched);
       
       {
         var result = obj.Source(parameter1, parameter2);
@@ -50,6 +51,7 @@ namespace HarmonyTests.SimpleTest
       }
       
       patch.Restore();
+      Assert.False(patch.IsPatched);
       
       {
         var result = obj.Source(parameter1, parameter2);
@@ -63,7 +65,8 @@ namespace HarmonyTests.SimpleTest
         obj.Reset();
       }
       
-      patch = PatchProcessor.Patch(src, prefix);
+      patch = Patch.Apply(src, prefix);
+      Assert.True(patch.IsPatched);
       
       {
         var result = obj.Source(parameter1, parameter2);
@@ -77,7 +80,8 @@ namespace HarmonyTests.SimpleTest
         obj.Reset();
       }
       
-      patch.Restore();
+      patch.Dispose();
+      Assert.False(patch.IsPatched);
       
       {
         var result = obj.Source(parameter1, parameter2);

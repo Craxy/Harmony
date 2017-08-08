@@ -16,7 +16,7 @@ namespace Harmony.ILCopying
 
 		public static void LogLastLocalVariable(ILGenerator il)
 		{
-			if (PatchProcessor.DEBUG)
+			if (Patch.DEBUG)
 			{
 				var existingLocals = Traverse.Create(il).Field("locals").GetValue<LocalBuilder[]>();
 				if (existingLocals.Length > 0)
@@ -46,145 +46,145 @@ namespace Harmony.ILCopying
 
 		public static void MarkLabel(ILGenerator il, Label label)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + FormatArgument(label));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + FormatArgument(label));
 			il.MarkLabel(label);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode);
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode);
 			il.Emit(opcode);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, LocalBuilder local)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(local));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(local));
 			il.Emit(opcode, local);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, FieldInfo field)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(field));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(field));
 			il.Emit(opcode, field);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, Label[] labels)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(labels));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(labels));
 			il.Emit(opcode, labels);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, Label label)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(label));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(label));
 			il.Emit(opcode, label);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, string str)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + FormatArgument(str));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + FormatArgument(str));
 			il.Emit(opcode, str);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, float arg)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
 			il.Emit(opcode, arg);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, byte arg)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
 			il.Emit(opcode, arg);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, sbyte arg)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
 			il.Emit(opcode, arg);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, double arg)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
 			il.Emit(opcode, arg);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, int arg)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
 			il.Emit(opcode, arg);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, MethodInfo meth)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(meth));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(meth));
 			il.Emit(opcode, meth);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, short arg)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
 			il.Emit(opcode, arg);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, SignatureHelper signature)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(signature));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(signature));
 			il.Emit(opcode, signature);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, ConstructorInfo con)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(con));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(con));
 			il.Emit(opcode, con);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, Type cls)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(cls));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(cls));
 			il.Emit(opcode, cls);
 		}
 
 		public static void Emit(ILGenerator il, OpCode opcode, long arg)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + opcode + " " + FormatArgument(arg));
 			il.Emit(opcode, arg);
 		}
 
 		public static void EmitCall(ILGenerator il, OpCode opcode, MethodInfo methodInfo, Type[] optionalParameterTypes)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + "Call " + opcode + " " + methodInfo + " " + optionalParameterTypes);
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + "Call " + opcode + " " + methodInfo + " " + optionalParameterTypes);
 			il.EmitCall(opcode, methodInfo, optionalParameterTypes);
 		}
 
 		public static void EmitCalli(ILGenerator il, OpCode opcode, CallingConvention unmanagedCallConv, Type returnType, Type[] parameterTypes)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + "Calli " + opcode + " " + unmanagedCallConv + " " + returnType + " " + parameterTypes);
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + "Calli " + opcode + " " + unmanagedCallConv + " " + returnType + " " + parameterTypes);
 			il.EmitCalli(opcode, unmanagedCallConv, returnType, parameterTypes);
 		}
 
 		public static void EmitCalli(ILGenerator il, OpCode opcode, CallingConventions callingConvention, Type returnType, Type[] parameterTypes, Type[] optionalParameterTypes)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + "Calli " + opcode + " " + callingConvention + " " + returnType + " " + parameterTypes + " " + optionalParameterTypes);
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + "Calli " + opcode + " " + callingConvention + " " + returnType + " " + parameterTypes + " " + optionalParameterTypes);
 			il.EmitCalli(opcode, callingConvention, returnType, parameterTypes, optionalParameterTypes);
 		}
 
 		public static void EmitWriteLine(ILGenerator il, string value)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + "WriteLine " + FormatArgument(value));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + "WriteLine " + FormatArgument(value));
 			il.EmitWriteLine(value);
 		}
 
 		public static void EmitWriteLine(ILGenerator il, LocalBuilder localBuilder)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + "WriteLine " + FormatArgument(localBuilder));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + "WriteLine " + FormatArgument(localBuilder));
 			il.EmitWriteLine(localBuilder);
 		}
 
 		public static void EmitWriteLine(ILGenerator il, FieldInfo fld)
 		{
-			if (PatchProcessor.DEBUG) FileLog.Log(CodePos(il) + "WriteLine " + FormatArgument(fld));
+			if (Patch.DEBUG) FileLog.Log(CodePos(il) + "WriteLine " + FormatArgument(fld));
 			il.EmitWriteLine(fld);
 		}
 

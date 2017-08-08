@@ -239,7 +239,7 @@ namespace Harmony.ILCopying
 					if (operand == null) throw new Exception("Wrong null argument: " + codeInstruction);
 					var emitMethod = EmitMethodForType(operand.GetType());
 					if (emitMethod == null) throw new Exception("Unknown Emit argument type " + operand.GetType() + " in " + codeInstruction);
-					if (PatchProcessor.DEBUG) FileLog.Log(Emitter.CodePos(generator) + code + " " + Emitter.FormatArgument(operand));
+					if (Patch.DEBUG) FileLog.Log(Emitter.CodePos(generator) + code + " " + Emitter.FormatArgument(operand));
 					emitMethod.Invoke(generator, new object[] { code, operand });
 				}
 			});

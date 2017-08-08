@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -67,7 +69,7 @@ namespace Harmony.ILCopying
 			return memory + sizeof(byte);
 		}
 
-		public static unsafe long WriteBytes(long memory, byte[] values)
+		public static long WriteBytes(long memory, byte[] values)
 		{
 			foreach (var value in values)
 				memory = WriteByte(memory, value);
