@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Harmony
 {
@@ -10,8 +11,8 @@ namespace Harmony
 
     public PatchProcessor(MethodBase original, HarmonyMethod postfix)
     {
-      this._original = original;
-      this._postfix = postfix ?? new HarmonyMethod(null);
+      _original = original;
+      _postfix = postfix ?? new HarmonyMethod(null);
     }
 
     public void Patch()
@@ -34,6 +35,19 @@ namespace Harmony
 
       PatchFunctions.RemovePostfix(_patchInfo, _postfix);
       PatchFunctions.UpdateWrapper(_original, _patchInfo);
+    }
+
+    public static bool DEBUG = false;
+
+    public static PatchProcessor Patch(MethodBase original, HarmonyMethod postfix)
+    {
+      var processor = new PatchProcessor(original, postfix);
+      processor.Patch();
+      return processor;
+    }
+    public static PatchProcessor Patch(MethodBase original, MethodInfo postfix)
+    {
+      return Patch(original, new HarmonyMethod(postfix));
     }
   }
 }

@@ -35,7 +35,35 @@ namespace HarmonyTests.SimpleTest
         obj.Reset();
       }
       
-      var patch = HarmonyInstance.Patch(src, new HarmonyMethod(prefix));
+      var patch = PatchProcessor.Patch(src, new HarmonyMethod(prefix));
+      
+      {
+        var result = obj.Source(parameter1, parameter2);
+        Assert.True(obj.SourceCalled);
+        Assert.Equal(expectedOutput, result);
+        Assert.Equal(expectedInput, obj.SourceInputs);
+        
+        Assert.True(SimpleTestClass.PostfixCalled);
+        Assert.Equal(expectedPostfixInput, SimpleTestClass.PostfixInputs);
+        
+        obj.Reset();
+      }
+      
+      patch.Restore();
+      
+      {
+        var result = obj.Source(parameter1, parameter2);
+        Assert.True(obj.SourceCalled);
+        Assert.Equal(expectedOutput, result);
+        Assert.Equal(expectedInput, obj.SourceInputs);
+        
+        Assert.False(SimpleTestClass.PostfixCalled);
+        Assert.Equal(emptyList, SimpleTestClass.PostfixInputs);
+        
+        obj.Reset();
+      }
+      
+      patch = PatchProcessor.Patch(src, prefix);
       
       {
         var result = obj.Source(parameter1, parameter2);
