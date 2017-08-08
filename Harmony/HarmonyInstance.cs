@@ -8,13 +8,9 @@ using System.Reflection;
 namespace Harmony
 {
 
-	public class HarmonyInstance
+	public static class HarmonyInstance
 	{
 		public static bool DEBUG = false;
-
-		private HarmonyInstance()
-		{
-		}
 
 		public static PatchProcessor Patch(MethodBase original, HarmonyMethod postfix)
 		{
