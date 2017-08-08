@@ -17,8 +17,6 @@ namespace Harmony
 
 		public static DynamicMethod CreatePatchedMethod(MethodBase original, MethodInfo postfix)
 		{
-			if (Patch.DEBUG) FileLog.Log("PATCHING " + original.DeclaringType + " " + original);
-
 			var patch = DynamicTools.CreateDynamicMethod(original, "_Patch");
 			var il = patch.GetILGenerator();
 
@@ -45,12 +43,6 @@ namespace Harmony
 			if (resultVariable != null)
 				Emitter.Emit(il, OpCodes.Ldloc, resultVariable);
 			Emitter.Emit(il, OpCodes.Ret);
-
-			if (Patch.DEBUG)
-			{
-				FileLog.Log("DONE");
-				FileLog.Log("");
-			}
 
 			DynamicTools.PrepareDynamicMethod(patch);
 			return patch;

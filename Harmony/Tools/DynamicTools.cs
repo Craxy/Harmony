@@ -42,7 +42,6 @@ namespace Harmony
 			return original.GetMethodBody().LocalVariables.Select(lvi =>
 			{
 				var localBuilder = il.DeclareLocal(lvi.LocalType, lvi.IsPinned);
-				Emitter.LogLastLocalVariable(il);
 				return localBuilder;
 			}).ToArray();
 		}
@@ -54,7 +53,6 @@ namespace Harmony
 			if (AccessTools.isClass(type))
 			{
 				var v = il.DeclareLocal(type);
-				Emitter.LogLastLocalVariable(il);
 				Emitter.Emit(il, OpCodes.Ldnull);
 				Emitter.Emit(il, OpCodes.Stloc, v);
 				return v;
@@ -62,7 +60,6 @@ namespace Harmony
 			if (AccessTools.isStruct(type))
 			{
 				var v = il.DeclareLocal(type);
-				Emitter.LogLastLocalVariable(il);
 				Emitter.Emit(il, OpCodes.Ldloca, v);
 				Emitter.Emit(il, OpCodes.Initobj, type);
 				return v;
@@ -70,7 +67,6 @@ namespace Harmony
 			if (AccessTools.isValue(type))
 			{
 				var v = il.DeclareLocal(type);
-				Emitter.LogLastLocalVariable(il);
 				if (type == typeof(float))
 					Emitter.Emit(il, OpCodes.Ldc_R4, (float)0);
 				else if (type == typeof(double))

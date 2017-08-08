@@ -46,8 +46,6 @@ namespace Harmony
       Restore();
     }
 
-    public static bool DEBUG = false;
-    
     private class PatchHandle : IDisposable
     {
       public DynamicMethod PatchedMethod { get; private set; }
