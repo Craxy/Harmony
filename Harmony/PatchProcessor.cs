@@ -7,7 +7,6 @@ namespace Harmony
   {
     private readonly MethodBase _original;
     private readonly MethodInfo _postfix;
-    private PatchInfo _patchInfo;
 
     public PatchProcessor(MethodBase original, MethodInfo postfix)
     {
@@ -15,26 +14,15 @@ namespace Harmony
       _postfix = postfix;
     }
 
+    //todo: state for IsPatched
     public void Patch()
     {
-      if (_patchInfo == null)
-      {
-        _patchInfo = new PatchInfo();
-      }
-
-      PatchFunctions.AddPostfix(_patchInfo, _postfix);
-      PatchFunctions.UpdateWrapper(_original, _patchInfo);
+      PatchFunctions.UpdateWrapper(_original, _postfix);
     }
 
     public void Restore()
     {
-      if (_patchInfo == null)
-      {
-        return;
-      }
-
-      PatchFunctions.RemovePostfix(_patchInfo, _postfix);
-      PatchFunctions.UpdateWrapper(_original, _patchInfo);
+      PatchFunctions.UpdateWrapper(_original, null);
     }
 
     public static bool DEBUG = false;

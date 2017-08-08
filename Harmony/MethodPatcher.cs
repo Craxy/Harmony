@@ -15,19 +15,18 @@ namespace Harmony
 		public static string RESULT_VAR = "__result";
 		public static string STATE_VAR = "__state";
 
-		public static DynamicMethod CreatePatchedMethod(MethodBase original, List<MethodInfo> postfixes)
+		public static DynamicMethod CreatePatchedMethod(MethodBase original, MethodInfo postfix)
 		{
 			if (PatchProcessor.DEBUG) FileLog.Log("PATCHING " + original.DeclaringType + " " + original);
 
-			var idx = postfixes.Count();
-			var patch = DynamicTools.CreateDynamicMethod(original, "_Patch" + idx);
+			var patch = DynamicTools.CreateDynamicMethod(original, "_Patch");
 			var il = patch.GetILGenerator();
 
 			var originalVariables = DynamicTools.DeclareLocalVariables(original, il);
 			var privateVars = new Dictionary<string, LocalBuilder>();
 
 			LocalBuilder resultVariable = null;
-			if (idx > 0)
+			if (postfix != null)
 			{
 				resultVariable = DynamicTools.DeclareLocalVariable(il, AccessTools.GetReturnedType(original));
 				privateVars[RESULT_VAR] = resultVariable;
@@ -41,7 +40,7 @@ namespace Harmony
 			if (resultVariable != null)
 				Emitter.Emit(il, OpCodes.Stloc, resultVariable);
 
-			AddPostfixes(il, original, postfixes, privateVars);
+			AddPostfix(il, original, postfix, privateVars);
 
 			if (resultVariable != null)
 				Emitter.Emit(il, OpCodes.Ldloc, resultVariable);
@@ -144,15 +143,14 @@ namespace Harmony
 			}
 		}
 
-		static void AddPostfixes(ILGenerator il, MethodBase original, List<MethodInfo> postfixes, Dictionary<string, LocalBuilder> variables)
+		static void AddPostfix(ILGenerator il, MethodBase original, MethodInfo postfix, Dictionary<string, LocalBuilder> variables)
 		{
-			postfixes.ForEach(fix =>
+			EmitCallParameter(il, original, postfix, variables);
+			Emitter.Emit(il, OpCodes.Call, postfix);
+			if (postfix.ReturnType != typeof(void))
 			{
-				EmitCallParameter(il, original, fix, variables);
-				Emitter.Emit(il, OpCodes.Call, fix);
-				if (fix.ReturnType != typeof(void))
-					throw new Exception("Postfix patch " + fix + " has not \"void\" return type: " + fix.ReturnType);
-			});
+				throw new Exception("Postfix patch " + postfix + " has not \"void\" return type: " + postfix.ReturnType);
+			}
 		}
 	}
 }

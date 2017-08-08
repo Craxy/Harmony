@@ -1,7 +1,5 @@
 ﻿using Harmony.ILCopying;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
@@ -10,43 +8,20 @@ namespace Harmony
 {
 	public static class PatchFunctions
 	{
-		public static void AddPostfix(PatchInfo patchInfo, MethodInfo method)
-		{
-			if (method == null)
-			{
-				return;
-			}
-			patchInfo.AddPostfix(method);
-		}
-
-		public static void RemovePostfix(PatchInfo patchInfo, MethodInfo method)
-		{
-			if (method == null)
-			{
-				return;
-			}
-			patchInfo.RemovePostfix(method);
-		}
-
-		public static List<MethodInfo> GetSortedPatchMethods(MethodBase original, Patch[] patches)
-		{
-			return patches
-				.Where(p => p.patch != null)
-				.OrderBy(p => p)
-				.Select(p => p.GetMethod(original))
-				.ToList();
-		}
-
 		internal struct PatchHandle
 		{
 			public DynamicMethod PatchedMethod;
 			public byte[] OverwrittenCode;
 		}
 
-		public static void UpdateWrapper(MethodBase original, PatchInfo patchInfo)
+		public static void UpdateWrapper(MethodBase original, MethodInfo postfix)
 		{
-			var sortedPostfixes = GetSortedPatchMethods(original, patchInfo.postfixes);
-
+//			if (postfix == null)
+//			{
+//				// revert postfix
+//				return;
+//			}
+			
 			var originalCodeStart = Memory.GetMethodStart(original);
 
 			// If we're overwriting an old patch, restore the original 12 (or 6) bytes of the method beforehand
@@ -57,14 +32,14 @@ namespace Harmony
 				Memory.WriteBytes(originalCodeStart, oldPatchHandle.OverwrittenCode);
 			}
 
-			if (patchInfo.postfixes.Length == 0)
+			if (postfix == null)
 			{
 				// No patches, can just leave the original method intact
 				PatchTools.ForgetObject(originalCodeStart);
 				return;
 			}
 
-			var replacement = MethodPatcher.CreatePatchedMethod(original, sortedPostfixes);
+			var replacement = MethodPatcher.CreatePatchedMethod(original, postfix);
 			if (replacement == null) throw new MissingMethodException("Cannot create dynamic replacement for " + original);
 			var patchCodeStart = Memory.GetMethodStart(replacement);
 
