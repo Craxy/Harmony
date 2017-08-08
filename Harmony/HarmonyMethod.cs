@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
 
 namespace Harmony
 {
@@ -13,9 +12,6 @@ namespace Harmony
 		public Type originalType;
 		public string methodName;
 		public Type[] parameter;
-		public int prioritiy = -1;
-		public string[] before;
-		public string[] after;
 
 		public HarmonyMethod()
 		{

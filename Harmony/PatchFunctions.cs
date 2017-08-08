@@ -13,11 +13,7 @@ namespace Harmony
 		public static void AddPostfix(PatchInfo patchInfo, string owner, HarmonyMethod info)
 		{
 			if (info == null || info.method == null) return;
-
-			var before = info.before ?? new string[0];
-			var after = info.after ?? new string[0];
-
-			patchInfo.AddPostfix(info.method, owner, before, after);
+			patchInfo.AddPostfix(info.method, owner);
 		}
 
 		public static void RemovePostfix(PatchInfo patchInfo, HarmonyMethod info)

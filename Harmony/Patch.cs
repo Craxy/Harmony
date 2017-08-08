@@ -50,17 +50,10 @@ namespace Harmony
 		}
 
 		// general sorting by (in that order): before, after, and index
-		public static int Comparer(object obj, int index, string[] before, string[] after)
+		public static int Comparer(object obj, int index)
 		{
 			var trv = Traverse.Create(obj);
-			var theirOwner = trv.Field("owner").GetValue<string>();
-			var theirPriority = trv.Field("priority").GetValue<int>();
 			var theirIndex = trv.Field("index").GetValue<int>();
-
-			if (before != null && Array.IndexOf(before, theirOwner) > -1)
-				return -1;
-			if (after != null && Array.IndexOf(after, theirOwner) > -1)
-				return 1;
 
 			return index.CompareTo(theirIndex);
 		}
@@ -76,15 +69,15 @@ namespace Harmony
 			postfixes = new Patch[0];
 		}
 
-		public void AddPostfix(MethodInfo patch, string owner, string[] before, string[] after)
+		public void AddPostfix(MethodInfo patch, string owner)
 		{
-			AddPatch(patch, ref postfixes, owner, before, after);
+			AddPatch(patch, ref postfixes, owner);
 		}
 
-		private void AddPatch(MethodInfo patch, ref Patch[] patchlist, string owner, string[] before, string[] after)
+		private void AddPatch(MethodInfo patch, ref Patch[] patchlist, string owner)
 		{
 			var l = patchlist.ToList();
-			l.Add(new Patch(patch, (patchlist.LastOrDefault()?.index ?? 0) + 1, owner, before, after));
+			l.Add(new Patch(patch, (patchlist.LastOrDefault()?.index ?? 0) + 1, owner));
 			patchlist = l.ToArray();
 		}
 
@@ -106,19 +99,15 @@ namespace Harmony
 	{
 		public readonly int index;
 		public readonly string owner;
-		public readonly string[] before;
-		public readonly string[] after;
 
 		public readonly MethodInfo patch;
 
-		public Patch(MethodInfo patch, int index, string owner, string[] before, string[] after)
+		public Patch(MethodInfo patch, int index, string owner)
 		{
 			if (patch is DynamicMethod) throw new Exception("Cannot directly reference dynamic method \"" + patch + "\" in Harmony. Use a factory method instead that will return the dynamic method.");
 
 			this.index = index;
 			this.owner = owner;
-			this.before = before;
-			this.after = after;
 			this.patch = patch;
 		}
 
@@ -141,7 +130,7 @@ namespace Harmony
 
 		public int CompareTo(object obj)
 		{
-			return PatchInfoSerialization.Comparer(obj, index, before, after);
+			return PatchInfoSerialization.Comparer(obj, index);
 		}
 
 		public override int GetHashCode()
