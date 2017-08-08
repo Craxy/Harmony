@@ -69,13 +69,6 @@ namespace Harmony
 			return result;
 		}
 
-		public static ConstructorInfo Constructor(Type type, Type[] parameters = null)
-		{
-			if (type == null) return null;
-			if (parameters == null) parameters = new Type[0];
-			return FindRecursive(type, t => t.GetConstructor(all, null, parameters, new ParameterModifier[] { }));
-		}
-
 		public static Type GetReturnedType(MethodBase method)
 		{
 			var constructor = method as ConstructorInfo;
@@ -87,12 +80,6 @@ namespace Harmony
 		{
 			if (type == null || name == null) return null;
 			return FindRecursive(type, t => t.GetNestedType(name, all));
-		}
-
-		public static Type FirstInner(Type type, Func<Type, bool> predicate)
-		{
-			if (type == null || predicate == null) return null;
-			return FindRecursive(type, t => t.GetNestedTypes(all).First(predicate));
 		}
 
 		public static Type[] GetTypes(object[] parameters)
@@ -121,15 +108,6 @@ namespace Harmony
 		{
 			if (instance == null) return new List<string>();
 			return GetPropertyNames(instance.GetType());
-		}
-
-		public static object GetDefaultValue(Type type)
-		{
-			if (type == null) return null;
-			if (type == typeof(void)) return null;
-			if (type.IsValueType)
-				return Activator.CreateInstance(type);
-			return null;
 		}
 
 		public static bool isStruct(Type type)

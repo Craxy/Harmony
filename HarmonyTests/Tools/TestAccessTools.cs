@@ -95,16 +95,5 @@ namespace HarmonyTests
 			Assert.Equal(typeof(object), types[2]);
 			Assert.Equal(typeof(Test_AccessTools), types[3]);
 		}
-
-		[Fact]
-		public void AccessTools_GetDefaultValue()
-		{
-			Assert.Equal(null, AccessTools.GetDefaultValue(null));
-			Assert.Equal((float)0, AccessTools.GetDefaultValue(typeof(float)));
-			Assert.Equal(null, AccessTools.GetDefaultValue(typeof(string)));
-			Assert.Equal(BindingFlags.Default, AccessTools.GetDefaultValue(typeof(BindingFlags)));
-			Assert.Equal(null, AccessTools.GetDefaultValue(typeof(IEnumerable<bool>)));
-			Assert.Equal(null, AccessTools.GetDefaultValue(typeof(void)));
-		}
 	}
 }
