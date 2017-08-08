@@ -1,94 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Harmony
 {
-	public class PatchProcessor
-	{
-		static object locker = new object();
+  public class PatchProcessor
+  {
+    private readonly MethodBase _original;
+    private readonly HarmonyMethod _postfix;
+    private PatchInfo _patchInfo;
 
-		readonly Type container;
-		readonly HarmonyMethod containerAttributes;
+    public PatchProcessor(MethodBase original, HarmonyMethod postfix)
+    {
+      this._original = original;
+      this._postfix = postfix ?? new HarmonyMethod(null);
+    }
 
-		MethodBase original;
-		HarmonyMethod postfix;
+    public void Patch()
+    {
+      if (_patchInfo == null)
+      {
+        _patchInfo = new PatchInfo();
+      }
 
-		PatchInfo patchInfo;
+      PatchFunctions.AddPostfix(_patchInfo, _postfix);
+      PatchFunctions.UpdateWrapper(_original, _patchInfo);
+    }
 
-		public PatchProcessor(Type type, HarmonyMethod attributes)
-		{
-			container = type;
-			containerAttributes = attributes ?? new HarmonyMethod(null);
-			postfix = containerAttributes.Clone();
-			ProcessType();
-		}
+    public void Restore()
+    {
+      if (_patchInfo == null)
+      {
+        return;
+      }
 
-		public PatchProcessor(MethodBase original, HarmonyMethod postfix)
-		{
-			this.original = original;
-			this.postfix = postfix ?? new HarmonyMethod(null);
-		}
-
-		public void Patch()
-		{
-			lock (locker)
-			{
-				if (patchInfo == null) patchInfo = new PatchInfo();
-
-				PatchFunctions.AddPostfix(patchInfo, postfix);
-				PatchFunctions.UpdateWrapper(original, patchInfo);
-			}
-		}
-
-		public void Restore()
-		{
-			lock (locker)
-			{
-				if (patchInfo == null) return;
-
-				PatchFunctions.RemovePostfix(patchInfo, postfix);
-				PatchFunctions.UpdateWrapper(original, patchInfo);
-			}
-		}
-
-		bool CallPrepare()
-		{
-//			if (original != null)
-//				return RunMethod<HarmonyPrepare, bool>(true, original);
-//			return RunMethod<HarmonyPrepare, bool>(true);
-			return false;
-		}
-
-		void ProcessType()
-		{
-			original = GetOriginalMethod();
-
-			var patchable = CallPrepare();
-			if (patchable)
-			{
-				if (original == null)
-					throw new ArgumentException("No target method specified for class " + container.FullName);
-
-
-				if (postfix.method != null)
-				{
-					if (postfix.method.IsStatic == false)
-						throw new ArgumentException("Patch method " + postfix.method.Name + " in " + postfix.method.DeclaringType + " must be static");
-
-					containerAttributes.CopyTo(postfix);
-				}
-
-			}
-		}
-
-		MethodBase GetOriginalMethod()
-		{
-			var attr = containerAttributes;
-			if (attr.originalType == null) return null;
-			if (attr.methodName == null)
-				return AccessTools.Constructor(attr.originalType, attr.parameter);
-			return AccessTools.Method(attr.originalType, attr.methodName, attr.parameter);
-		}
-	}
+      PatchFunctions.RemovePostfix(_patchInfo, _postfix);
+      PatchFunctions.UpdateWrapper(_original, _patchInfo);
+    }
+  }
 }
