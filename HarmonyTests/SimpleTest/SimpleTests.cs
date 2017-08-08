@@ -35,7 +35,7 @@ namespace HarmonyTests.SimpleTest
         obj.Reset();
       }
       
-      var patch = PatchProcessor.Patch(src, new HarmonyMethod(prefix));
+      var patch = PatchProcessor.Patch(src, prefix);
       
       {
         var result = obj.Source(parameter1, parameter2);

@@ -6,13 +6,13 @@ namespace Harmony
   public class PatchProcessor
   {
     private readonly MethodBase _original;
-    private readonly HarmonyMethod _postfix;
+    private readonly MethodInfo _postfix;
     private PatchInfo _patchInfo;
 
-    public PatchProcessor(MethodBase original, HarmonyMethod postfix)
+    public PatchProcessor(MethodBase original, MethodInfo postfix)
     {
       _original = original;
-      _postfix = postfix ?? new HarmonyMethod(null);
+      _postfix = postfix;
     }
 
     public void Patch()
@@ -39,15 +39,11 @@ namespace Harmony
 
     public static bool DEBUG = false;
 
-    public static PatchProcessor Patch(MethodBase original, HarmonyMethod postfix)
+    public static PatchProcessor Patch(MethodBase original, MethodInfo postfix)
     {
       var processor = new PatchProcessor(original, postfix);
       processor.Patch();
       return processor;
-    }
-    public static PatchProcessor Patch(MethodBase original, MethodInfo postfix)
-    {
-      return Patch(original, new HarmonyMethod(postfix));
     }
   }
 }

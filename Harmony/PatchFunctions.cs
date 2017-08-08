@@ -10,17 +10,22 @@ namespace Harmony
 {
 	public static class PatchFunctions
 	{
-		public static void AddPostfix(PatchInfo patchInfo, HarmonyMethod info)
+		public static void AddPostfix(PatchInfo patchInfo, MethodInfo method)
 		{
-			if (info == null || info.method == null) return;
-			patchInfo.AddPostfix(info.method);
+			if (method == null)
+			{
+				return;
+			}
+			patchInfo.AddPostfix(method);
 		}
 
-		public static void RemovePostfix(PatchInfo patchInfo, HarmonyMethod info)
+		public static void RemovePostfix(PatchInfo patchInfo, MethodInfo method)
 		{
-			if (info == null || info.method == null) return;
-
-			patchInfo.RemovePostfix(info.method);
+			if (method == null)
+			{
+				return;
+			}
+			patchInfo.RemovePostfix(method);
 		}
 
 		public static List<MethodInfo> GetSortedPatchMethods(MethodBase original, Patch[] patches)
