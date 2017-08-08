@@ -106,26 +106,5 @@ namespace HarmonyTests
 			Assert.Equal(null, AccessTools.GetDefaultValue(typeof(IEnumerable<bool>)));
 			Assert.Equal(null, AccessTools.GetDefaultValue(typeof(void)));
 		}
-
-		[Fact]
-		public void AccessTools_TypeExtension_Description()
-		{
-			var types = new Type[] { typeof(string), typeof(int), null, typeof(void), typeof(Test_AccessTools) };
-			Assert.Equal("(System.String, System.Int32, null, System.Void, HarmonyTests.Test_AccessTools)", types.Description());
-		}
-
-		[Fact]
-		public void AccessTools_TypeExtension_Types()
-		{
-			// public static void Resize<T>(ref T[] array, int newSize);
-			var method = typeof(Array).GetMethod("Resize");
-			var pinfo = method.GetParameters();
-			var types = pinfo.Types();
-
-			Assert.NotNull(types);
-			Assert.Equal(2, types.Length);
-			Assert.Equal(pinfo[0].ParameterType, types[0]);
-			Assert.Equal(pinfo[1].ParameterType, types[1]);
-		}
 	}
 }
