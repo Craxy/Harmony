@@ -8,26 +8,22 @@ namespace Harmony
 	{
 		static object locker = new object();
 
-		readonly HarmonyInstance instance;
-
 		readonly Type container;
 		readonly HarmonyMethod containerAttributes;
 
 		MethodBase original;
 		HarmonyMethod postfix;
 
-		public PatchProcessor(HarmonyInstance instance, Type type, HarmonyMethod attributes)
+		public PatchProcessor(Type type, HarmonyMethod attributes)
 		{
-			this.instance = instance;
 			container = type;
 			containerAttributes = attributes ?? new HarmonyMethod(null);
 			postfix = containerAttributes.Clone();
 			ProcessType();
 		}
 
-		public PatchProcessor(HarmonyInstance instance, MethodBase original, HarmonyMethod postfix)
+		public PatchProcessor(MethodBase original, HarmonyMethod postfix)
 		{
-			this.instance = instance;
 			this.original = original;
 			this.postfix = postfix ?? new HarmonyMethod(null);
 		}
@@ -111,34 +107,6 @@ namespace Harmony
 			if (attr.methodName == null)
 				return AccessTools.Constructor(attr.originalType, attr.parameter);
 			return AccessTools.Method(attr.originalType, attr.methodName, attr.parameter);
-		}
-
-		T RunMethod<S, T>(T defaultIfNotExisting, params object[] parameters)
-		{
-			var methodName = typeof(S).Name.Replace("Harmony", "");
-
-			var paramList = new List<object> { instance };
-			paramList.AddRange(parameters);
-			var paramTypes = AccessTools.GetTypes(paramList.ToArray());
-			var method = PatchTools.GetPatchMethod<S>(container, methodName, paramTypes);
-			if (method != null && typeof(T).IsAssignableFrom(method.ReturnType))
-				return (T)method.Invoke(null, paramList.ToArray());
-
-			method = PatchTools.GetPatchMethod<S>(container, methodName, new Type[] { typeof(HarmonyInstance) });
-			if (method != null && typeof(T).IsAssignableFrom(method.ReturnType))
-				return (T)method.Invoke(null, new object[] { instance });
-
-			method = PatchTools.GetPatchMethod<S>(container, methodName, Type.EmptyTypes);
-			if (method != null)
-			{
-				if (typeof(T).IsAssignableFrom(method.ReturnType))
-					return (T)method.Invoke(null, Type.EmptyTypes);
-
-				method.Invoke(null, Type.EmptyTypes);
-				return defaultIfNotExisting;
-			}
-
-			return defaultIfNotExisting;
 		}
 	}
 }

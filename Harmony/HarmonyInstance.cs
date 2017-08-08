@@ -23,34 +23,29 @@ namespace Harmony
 	{
 		public static bool DEBUG = false;
 
-		HarmonyInstance()
+		private HarmonyInstance()
 		{
 		}
 
-		public static HarmonyInstance Create()
+		public static PatchProcessor Patch(MethodBase original, HarmonyMethod postfix)
 		{
-			return new HarmonyInstance();
-		}
-
-		public PatchProcessor Patch(MethodBase original, HarmonyMethod postfix)
-		{
-			var processor = new PatchProcessor(this, original, postfix);
+			var processor = new PatchProcessor(original, postfix);
 			processor.Patch();
 			return processor;
 		}
 
-		public void Restore(MethodBase original, HarmonyMethod postfix)
+		public static void Restore(MethodBase original, HarmonyMethod postfix)
 		{
-			var processor = new PatchProcessor(this, original, postfix);
+			var processor = new PatchProcessor(original, postfix);
 			processor.Restore();
 		}
 
-		public Patches IsPatched(MethodBase method)
+		public static Patches IsPatched(MethodBase method)
 		{
 			return PatchProcessor.IsPatched(method);
 		}
 
-		public IEnumerable<MethodBase> GetPatchedMethods()
+		public static IEnumerable<MethodBase> GetPatchedMethods()
 		{
 			return HarmonySharedState.GetPatchedMethods();
 		}
