@@ -51,7 +51,7 @@ namespace Harmony
 				var patchInfo = HarmonySharedState.GetPatchInfo(original);
 				if (patchInfo == null) patchInfo = new PatchInfo();
 
-				PatchFunctions.AddPostfix(patchInfo, instance.Id, postfix);
+				PatchFunctions.AddPostfix(patchInfo, postfix);
 				PatchFunctions.UpdateWrapper(original, patchInfo);
 
 				HarmonySharedState.UpdatePatchInfo(original, patchInfo);

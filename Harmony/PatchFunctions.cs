@@ -10,10 +10,10 @@ namespace Harmony
 {
 	public static class PatchFunctions
 	{
-		public static void AddPostfix(PatchInfo patchInfo, string owner, HarmonyMethod info)
+		public static void AddPostfix(PatchInfo patchInfo, HarmonyMethod info)
 		{
 			if (info == null || info.method == null) return;
-			patchInfo.AddPostfix(info.method, owner);
+			patchInfo.AddPostfix(info.method);
 		}
 
 		public static void RemovePostfix(PatchInfo patchInfo, HarmonyMethod info)

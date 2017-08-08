@@ -11,16 +11,6 @@ namespace Harmony
 	{
 		public readonly ReadOnlyCollection<Patch> Postfixes;
 
-		public ReadOnlyCollection<string> Owners
-		{
-			get
-			{
-				var result = new HashSet<string>();
-				result.UnionWith(Postfixes.Select(p => p.owner));
-				return result.ToList().AsReadOnly();
-			}
-		}
-
 		public Patches(Patch[] postfixes)
 		{
 			if (postfixes == null) postfixes = new Patch[0];
@@ -31,19 +21,15 @@ namespace Harmony
 
 	public class HarmonyInstance
 	{
-		readonly string id;
-		public string Id => id;
 		public static bool DEBUG = false;
 
-		HarmonyInstance(string id)
+		HarmonyInstance()
 		{
-			this.id = id;
 		}
 
-		public static HarmonyInstance Create(string id)
+		public static HarmonyInstance Create()
 		{
-			if (id == null) throw new Exception("id cannot be null");
-			return new HarmonyInstance(id);
+			return new HarmonyInstance();
 		}
 
 		public PatchProcessor Patch(MethodBase original, HarmonyMethod postfix)
@@ -59,8 +45,6 @@ namespace Harmony
 			processor.Restore();
 		}
 
-		//
-
 		public Patches IsPatched(MethodBase method)
 		{
 			return PatchProcessor.IsPatched(method);
@@ -69,26 +53,6 @@ namespace Harmony
 		public IEnumerable<MethodBase> GetPatchedMethods()
 		{
 			return HarmonySharedState.GetPatchedMethods();
-		}
-
-		public Dictionary<string, Version> VersionInfo(out Version currentVersion)
-		{
-			currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
-			var assemblies = new Dictionary<string, Assembly>();
-			GetPatchedMethods().Do(method =>
-			{
-				var info = HarmonySharedState.GetPatchInfo(method);
-				info.postfixes.Do(fix => assemblies[fix.owner] = fix.patch.DeclaringType.Assembly);
-			});
-
-			var result = new Dictionary<string, Version>();
-			assemblies.Do(info =>
-			{
-				var assemblyName = info.Value.GetReferencedAssemblies().FirstOrDefault(a => a.FullName.StartsWith("0Harmony, Version"));
-				if (assemblyName != null)
-					result[info.Key] = assemblyName.Version;
-			});
-			return result;
 		}
 	}
 }

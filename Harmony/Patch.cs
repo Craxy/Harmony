@@ -69,15 +69,15 @@ namespace Harmony
 			postfixes = new Patch[0];
 		}
 
-		public void AddPostfix(MethodInfo patch, string owner)
+		public void AddPostfix(MethodInfo patch)
 		{
-			AddPatch(patch, ref postfixes, owner);
+			AddPatch(patch, ref postfixes);
 		}
 
-		private void AddPatch(MethodInfo patch, ref Patch[] patchlist, string owner)
+		private void AddPatch(MethodInfo patch, ref Patch[] patchlist)
 		{
 			var l = patchlist.ToList();
-			l.Add(new Patch(patch, (patchlist.LastOrDefault()?.index ?? 0) + 1, owner));
+			l.Add(new Patch(patch, (patchlist.LastOrDefault()?.index ?? 0) + 1));
 			patchlist = l.ToArray();
 		}
 
@@ -98,16 +98,14 @@ namespace Harmony
 	public class Patch : IComparable
 	{
 		public readonly int index;
-		public readonly string owner;
 
 		public readonly MethodInfo patch;
 
-		public Patch(MethodInfo patch, int index, string owner)
+		public Patch(MethodInfo patch, int index)
 		{
 			if (patch is DynamicMethod) throw new Exception("Cannot directly reference dynamic method \"" + patch + "\" in Harmony. Use a factory method instead that will return the dynamic method.");
 
 			this.index = index;
-			this.owner = owner;
 			this.patch = patch;
 		}
 

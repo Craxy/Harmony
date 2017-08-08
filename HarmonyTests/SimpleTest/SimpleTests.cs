@@ -35,7 +35,7 @@ namespace HarmonyTests.SimpleTest
         obj.Reset();
       }
       
-      var hi = HarmonyInstance.Create("SomeTest");
+      var hi = HarmonyInstance.Create();
       var patch = hi.Patch(src, new HarmonyMethod(prefix));
       
       {
