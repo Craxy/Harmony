@@ -28,11 +28,9 @@ namespace Harmony
 			this.postfix = postfix ?? new HarmonyMethod(null);
 		}
 
-		public static Patches IsPatched(MethodBase method)
+		public static bool IsPatched(MethodBase method)
 		{
-			var patchInfo = HarmonySharedState.GetPatchInfo(method);
-			if (patchInfo == null) return null;
-			return new Patches(patchInfo.postfixes);
+			return HarmonySharedState.GetPatchInfo(method) != null;
 		}
 
 		public static IEnumerable<MethodBase> AllPatchedMethods()

@@ -7,17 +7,6 @@ using System.Reflection;
 
 namespace Harmony
 {
-	public class Patches
-	{
-		public readonly ReadOnlyCollection<Patch> Postfixes;
-
-		public Patches(Patch[] postfixes)
-		{
-			if (postfixes == null) postfixes = new Patch[0];
-
-			Postfixes = postfixes.ToList().AsReadOnly();
-		}
-	}
 
 	public class HarmonyInstance
 	{
@@ -40,7 +29,7 @@ namespace Harmony
 			processor.Restore();
 		}
 
-		public static Patches IsPatched(MethodBase method)
+		public static bool IsPatched(MethodBase method)
 		{
 			return PatchProcessor.IsPatched(method);
 		}
