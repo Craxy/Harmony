@@ -18,21 +18,5 @@ namespace Harmony
 			processor.Patch();
 			return processor;
 		}
-
-		public static void Restore(MethodBase original, HarmonyMethod postfix)
-		{
-			var processor = new PatchProcessor(original, postfix);
-			processor.Restore();
-		}
-
-		public static bool IsPatched(MethodBase method)
-		{
-			return PatchProcessor.IsPatched(method);
-		}
-
-		public static IEnumerable<MethodBase> GetPatchedMethods()
-		{
-			return HarmonySharedState.GetPatchedMethods();
-		}
 	}
 }

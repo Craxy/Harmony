@@ -14,6 +14,8 @@ namespace Harmony
 		MethodBase original;
 		HarmonyMethod postfix;
 
+		PatchInfo patchInfo;
+
 		public PatchProcessor(Type type, HarmonyMethod attributes)
 		{
 			container = type;
@@ -28,27 +30,14 @@ namespace Harmony
 			this.postfix = postfix ?? new HarmonyMethod(null);
 		}
 
-		public static bool IsPatched(MethodBase method)
-		{
-			return HarmonySharedState.GetPatchInfo(method) != null;
-		}
-
-		public static IEnumerable<MethodBase> AllPatchedMethods()
-		{
-			return HarmonySharedState.GetPatchedMethods();
-		}
-
 		public void Patch()
 		{
 			lock (locker)
 			{
-				var patchInfo = HarmonySharedState.GetPatchInfo(original);
 				if (patchInfo == null) patchInfo = new PatchInfo();
 
 				PatchFunctions.AddPostfix(patchInfo, postfix);
 				PatchFunctions.UpdateWrapper(original, patchInfo);
-
-				HarmonySharedState.UpdatePatchInfo(original, patchInfo);
 			}
 		}
 
@@ -56,13 +45,10 @@ namespace Harmony
 		{
 			lock (locker)
 			{
-				var patchInfo = HarmonySharedState.GetPatchInfo(original);
 				if (patchInfo == null) return;
 
 				PatchFunctions.RemovePostfix(patchInfo, postfix);
 				PatchFunctions.UpdateWrapper(original, patchInfo);
-
-				HarmonySharedState.UpdatePatchInfo(original, patchInfo);
 			}
 		}
 
@@ -81,8 +67,6 @@ namespace Harmony
 			var patchable = CallPrepare();
 			if (patchable)
 			{
-//				if (original == null)
-//					original = RunMethod<HarmonyTargetMethod, MethodBase>(null);
 				if (original == null)
 					throw new ArgumentException("No target method specified for class " + container.FullName);
 
